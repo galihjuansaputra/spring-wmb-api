@@ -1,6 +1,5 @@
 package com.enigma.wmbapi.services;
 
-import com.enigma.wmbapi.dto.request.EditMCustomerRequest;
 import com.enigma.wmbapi.dto.request.NewMCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchMCustomerRequest;
 import com.enigma.wmbapi.entity.MCustomer;
@@ -14,7 +13,7 @@ public interface MCustomerService {
 
     Page<MCustomer> getAll(SearchMCustomerRequest request);
 
-    MCustomer update(EditMCustomerRequest request);
+    MCustomer update(MCustomer customer);
     void delete(String id);
 
 }

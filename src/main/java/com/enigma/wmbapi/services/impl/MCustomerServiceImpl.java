@@ -1,6 +1,5 @@
 package com.enigma.wmbapi.services.impl;
 
-import com.enigma.wmbapi.dto.request.EditMCustomerRequest;
 import com.enigma.wmbapi.dto.request.NewMCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchMCustomerRequest;
 import com.enigma.wmbapi.entity.MCustomer;
@@ -8,7 +7,12 @@ import com.enigma.wmbapi.repository.MCustomerRepository;
 import com.enigma.wmbapi.services.MCustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,24 +30,30 @@ public class MCustomerServiceImpl implements MCustomerService {
 
     @Override
     public MCustomer getById(String id) {
-        return null;
+        return mCustomerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "customer not found"));
     }
 
     @Override
     public Page<MCustomer> getAll(SearchMCustomerRequest request) {
-        if(request.getPage() == 0){
-            request.setPage(1);
-        }
-        return null;
+        if(request.getPage() <= 0) request.setPage(1);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+        Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize(), sort);
+
+        return mCustomerRepository.findAll(pageable);
     }
 
     @Override
-    public MCustomer update(EditMCustomerRequest request) {
-        return null;
+    public MCustomer update(MCustomer customer) {
+        getById(customer.getId());
+        return mCustomerRepository.saveAndFlush(customer);
     }
 
     @Override
     public void delete(String id) {
-
+        MCustomer currentCustomer = getById(id);
+        mCustomerRepository.delete(currentCustomer);
     }
+
+
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 public class SearchMCustomerRequest {
     private String name;
     private String phoneNumber;
+    private String sortBy;
     private Integer page;
     private Integer size;
     private String direction;

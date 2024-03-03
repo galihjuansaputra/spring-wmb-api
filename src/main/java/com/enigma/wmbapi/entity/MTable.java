@@ -16,7 +16,6 @@ public class MTable {
     private String id;
 
     @NotNull
-    @Lob
     @Column(name = "name", nullable = false)
     private String name;
 
