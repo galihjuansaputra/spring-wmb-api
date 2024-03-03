@@ -64,7 +64,7 @@ public class MCustomerController {
 
         CommonResponse<List<MCustomer>> response = CommonResponse.<List<MCustomer>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success Get All Product")
+                .message("Success Get All Customer")
                 .data(customers.getContent())
                 .paging(pagingResponse)
                 .build();

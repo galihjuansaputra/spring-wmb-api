@@ -2,6 +2,7 @@ package com.enigma.wmbapi.services.impl;
 
 import com.enigma.wmbapi.dto.request.NewMCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchMCustomerRequest;
+import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.MCustomer;
 import com.enigma.wmbapi.repository.MCustomerRepository;
 import com.enigma.wmbapi.services.MCustomerService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -20,7 +22,7 @@ public class MCustomerServiceImpl implements MCustomerService {
     private final MCustomerRepository mCustomerRepository;
 
     @Override
-    public MCustomer create(NewMCustomerRequest request){
+    public MCustomer create(NewMCustomerRequest request) {
         MCustomer customer = MCustomer.builder()
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
@@ -35,14 +37,23 @@ public class MCustomerServiceImpl implements MCustomerService {
 
     @Override
     public Page<MCustomer> getAll(SearchMCustomerRequest request) {
-        if(request.getPage() <= 0) request.setPage(1);
+        if (request.getPage() <= 0) request.setPage(1);
 
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
         Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize(), sort);
-        if (request.getName() != null || request.getPhoneNumber()  != null) {
-            return mCustomerRepository.findAllByNameContainingIgnoreCaseOrPhoneNumberContaining(request.getName(), request.getPhoneNumber(), pageable);
+
+        if (request.getName() != null || request.getPhoneNumber() != null) {
+            Page<MCustomer> result = mCustomerRepository.findAllByNameContainingIgnoreCaseOrPhoneNumberContaining(request.getName(), request.getPhoneNumber(), pageable);
+
+            if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
+
+            return result;
         }
-        return mCustomerRepository.findAll(pageable);
+
+        Page<MCustomer> result = mCustomerRepository.findAll(pageable);
+        if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
+
+        return result;
     }
 
     @Override
