@@ -39,7 +39,9 @@ public class MCustomerServiceImpl implements MCustomerService {
 
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
         Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize(), sort);
-
+        if (request.getName() != null) {
+            return mCustomerRepository.findAllByNameContainingIgnoreCase(request.getName(), pageable);
+        }
         return mCustomerRepository.findAll(pageable);
     }
 
