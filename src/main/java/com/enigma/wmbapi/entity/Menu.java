@@ -2,12 +2,14 @@ package com.enigma.wmbapi.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "m_menu")
 public class Menu {
     @Id
