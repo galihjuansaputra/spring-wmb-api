@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class BillDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bill_id")
+    @JsonBackReference
     private Bill bill;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,7 +30,7 @@ public class BillDetail {
     private Float qty;
 
     @NotNull
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", nullable = false, updatable = false)
     private Float price;
 
 }

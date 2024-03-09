@@ -1,11 +1,13 @@
 package com.enigma.wmbapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,5 +35,9 @@ public class Bill {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trans_type", nullable = false)
     private TransType transType;
+
+    @OneToMany(mappedBy = "bill")
+    @JsonManagedReference
+    private List<BillDetail> transactionDetails;
 
 }
