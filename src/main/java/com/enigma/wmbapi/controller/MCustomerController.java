@@ -4,6 +4,7 @@ import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.dto.request.NewMCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchMCustomerRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
+import com.enigma.wmbapi.dto.response.MCustomerResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.MCustomer;
 import com.enigma.wmbapi.services.MCustomerService;
@@ -34,7 +35,7 @@ public class MCustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<MCustomer>>> getAllCustomer(
+    public ResponseEntity<CommonResponse<List<MCustomerResponse>>> getAllCustomer(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -51,7 +52,7 @@ public class MCustomerController {
                 .direction(direction)
                 .build();
 
-        Page<MCustomer> customers = mCustomerService.getAll(request);
+        Page<MCustomerResponse> customers = mCustomerService.getAll(request);
 
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(customers.getTotalPages())
@@ -62,7 +63,7 @@ public class MCustomerController {
                 .hasPrevious(customers.hasPrevious())
                 .build();
 
-        CommonResponse<List<MCustomer>> response = CommonResponse.<List<MCustomer>>builder()
+        CommonResponse<List<MCustomerResponse>> response = CommonResponse.<List<MCustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success Get All Customer")
                 .data(customers.getContent())

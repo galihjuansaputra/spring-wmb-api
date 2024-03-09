@@ -2,19 +2,20 @@ package com.enigma.wmbapi.services.impl;
 
 import com.enigma.wmbapi.dto.request.NewMCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchMCustomerRequest;
+import com.enigma.wmbapi.dto.response.MCustomerResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.MCustomer;
 import com.enigma.wmbapi.repository.MCustomerRepository;
 import com.enigma.wmbapi.services.MCustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,21 +37,29 @@ public class MCustomerServiceImpl implements MCustomerService {
     }
 
     @Override
-    public Page<MCustomer> getAll(SearchMCustomerRequest request) {
+    public Page<MCustomerResponse> getAll(SearchMCustomerRequest request) {
         if (request.getPage() <= 0) request.setPage(1);
 
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
         Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize(), sort);
 
         if (request.getName() != null || request.getPhoneNumber() != null) {
-            Page<MCustomer> result = mCustomerRepository.findAllByNameContainingIgnoreCaseOrPhoneNumberContaining(request.getName(), request.getPhoneNumber(), pageable);
+            Page<MCustomerResponse> result = mCustomerRepository.findAllByNameContainingIgnoreCaseOrPhoneNumberContaining(request.getName(), request.getPhoneNumber(), pageable);
 
             if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
 
             return result;
         }
 
-        Page<MCustomer> result = mCustomerRepository.findAll(pageable);
+        Page<MCustomer> customers = mCustomerRepository.findAll(pageable);
+
+        List<MCustomerResponse> customerResponses = customers.getContent()
+                .stream()
+                .map(this::convertMCustomerToMCustomerResponse)
+                .toList();
+
+        Page<MCustomerResponse> result = new PageImpl<>(customerResponses, pageable, customers.getTotalElements());
+
         if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
 
         return result;
@@ -66,6 +75,14 @@ public class MCustomerServiceImpl implements MCustomerService {
     public void delete(String id) {
         MCustomer currentCustomer = getById(id);
         mCustomerRepository.delete(currentCustomer);
+    }
+
+    private MCustomerResponse convertMCustomerToMCustomerResponse(MCustomer customer) {
+        return MCustomerResponse.builder()
+                .id(customer.getId())
+                .name(customer.getName())
+                .phoneNumber(customer.getPhoneNumber())
+                .build();
     }
 
 
