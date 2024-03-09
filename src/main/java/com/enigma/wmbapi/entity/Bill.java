@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "t_bill")
-public class TBill {
+public class Bill {
     @Id
     @Column(name = "id", nullable = false, length = Integer.MAX_VALUE)
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,7 +23,7 @@ public class TBill {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private MCustomer customer;
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_id")
@@ -32,6 +32,6 @@ public class TBill {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trans_type", nullable = false)
-    private MTransType transType;
+    private TransType transType;
 
 }

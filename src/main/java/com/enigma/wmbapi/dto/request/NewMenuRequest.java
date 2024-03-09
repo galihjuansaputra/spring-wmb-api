@@ -1,19 +1,17 @@
 package com.enigma.wmbapi.dto.request;
 
+import com.enigma.wmbapi.entity.Menu;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
-
-import java.io.Serializable;
 
 /**
- * DTO for {@link com.enigma.wmbapi.entity.MMenu}
+ * DTO for {@link Menu}
  */
 @Data
 @Builder
-public class NewMMenuRequst {
+public class NewMenuRequest {
     @NotNull
     String name;
     @Min(value = 0)

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "t_bill_detail")
-public class TBillDetail {
+public class BillDetail {
     @Id
     @Column(name = "id", nullable = false, length = Integer.MAX_VALUE)
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -17,11 +17,11 @@ public class TBillDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bill_id")
-    private TBill bill;
+    private Bill bill;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
-    private MMenu menu;
+    private Menu menu;
 
     @NotNull
     @Column(name = "qty", nullable = false)

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "m_menu")
-public class MMenu {
+public class Menu {
     @Id
     @Column(name = "id", nullable = false, length = Integer.MAX_VALUE)
     @GeneratedValue(strategy = GenerationType.UUID)

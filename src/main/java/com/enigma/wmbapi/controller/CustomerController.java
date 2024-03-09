@@ -1,13 +1,13 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
-import com.enigma.wmbapi.dto.request.NewMCustomerRequest;
-import com.enigma.wmbapi.dto.request.SearchMCustomerRequest;
+import com.enigma.wmbapi.dto.request.NewCustomerRequest;
+import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
-import com.enigma.wmbapi.dto.response.MCustomerResponse;
+import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
-import com.enigma.wmbapi.entity.MCustomer;
-import com.enigma.wmbapi.services.MCustomerService;
+import com.enigma.wmbapi.entity.Customer;
+import com.enigma.wmbapi.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,14 +19,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = APIUrl.CUSTOMER_API)
-public class MCustomerController {
+public class CustomerController {
 
-    private final MCustomerService mCustomerService;
+    private final CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<MCustomer>> createNewCustomer(@RequestBody NewMCustomerRequest request) {
-        MCustomer customer = mCustomerService.create(request);
-        CommonResponse<MCustomer> response = CommonResponse.<MCustomer>builder()
+    public ResponseEntity<CommonResponse<Customer>> createNewCustomer(@RequestBody NewCustomerRequest request) {
+        Customer customer = customerService.create(request);
+        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Successfully create new customer")
                 .data(customer)
@@ -35,7 +35,7 @@ public class MCustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<MCustomerResponse>>> getAllCustomer(
+    public ResponseEntity<CommonResponse<List<CustomerResponse>>> getAllCustomer(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -43,7 +43,7 @@ public class MCustomerController {
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction
     ) {
-        SearchMCustomerRequest request = SearchMCustomerRequest.builder()
+        SearchCustomerRequest request = SearchCustomerRequest.builder()
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .page(page)
@@ -52,7 +52,7 @@ public class MCustomerController {
                 .direction(direction)
                 .build();
 
-        Page<MCustomerResponse> customers = mCustomerService.getAll(request);
+        Page<CustomerResponse> customers = customerService.getAll(request);
 
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(customers.getTotalPages())
@@ -63,7 +63,7 @@ public class MCustomerController {
                 .hasPrevious(customers.hasPrevious())
                 .build();
 
-        CommonResponse<List<MCustomerResponse>> response = CommonResponse.<List<MCustomerResponse>>builder()
+        CommonResponse<List<CustomerResponse>> response = CommonResponse.<List<CustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success Get All Customer")
                 .data(customers.getContent())
@@ -74,20 +74,20 @@ public class MCustomerController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<MCustomer> getCustomerById(@PathVariable String id){
-        MCustomer customer = mCustomerService.getById(id);
+    public ResponseEntity<Customer> getCustomerById(@PathVariable String id){
+        Customer customer = customerService.getById(id);
         return ResponseEntity.ok(customer);
     }
 
     @PutMapping
-    public ResponseEntity<MCustomer> updateCustomer(@RequestBody MCustomer customer){
-        MCustomer newCustomer = mCustomerService.update(customer);
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer){
+        Customer newCustomer = customerService.update(customer);
         return ResponseEntity.ok(newCustomer);
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> deleteById(@PathVariable String id){
-        mCustomerService.delete(id);
+        customerService.delete(id);
         return ResponseEntity.ok("Deleted.");
     }
 

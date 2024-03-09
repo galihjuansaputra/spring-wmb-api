@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "m_customer")
-public class MCustomer {
+public class Customer {
     @Id
     @Column(name = "id", nullable = false, length = Integer.MAX_VALUE)
     @GeneratedValue(strategy = GenerationType.UUID)

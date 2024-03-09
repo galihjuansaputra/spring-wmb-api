@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SearchMCustomerRequest {
+public class SearchCustomerRequest {
     private String name;
     private String phoneNumber;
     private String sortBy;

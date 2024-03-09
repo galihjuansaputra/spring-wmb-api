@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "m_trans_type")
-public class MTransType {
+public class TransType {
     @Id
     @Column(name = "id", nullable = false, length = Integer.MAX_VALUE)
     private String id;
