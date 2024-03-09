@@ -10,6 +10,6 @@ import java.util.List;
 public class BillRequest {
     private String customerId;
     private String tableId;
-    private String transType;
+    private String transTypeId;
     private List<BillDetailRequest> billDetails;
 }

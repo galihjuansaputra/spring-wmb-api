@@ -30,6 +30,11 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public Menu update(Menu menu) {
+        return menuRepository.saveAndFlush(menu);
+    }
+
+    @Override
     public void delete(String id) {
         Menu currentMenu = getById(id);
         menuRepository.delete(currentMenu);

@@ -3,13 +3,15 @@ package com.enigma.wmbapi.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "t_bill_detail")
+@NoArgsConstructor
+@AllArgsConstructor
 public class BillDetail {
     @Id
     @Column(name = "id", nullable = false, length = Integer.MAX_VALUE)
@@ -27,10 +29,10 @@ public class BillDetail {
 
     @NotNull
     @Column(name = "qty", nullable = false)
-    private Float qty;
+    private Integer qty;
 
     @NotNull
     @Column(name = "price", nullable = false, updatable = false)
-    private Float price;
+    private Long price;
 
 }

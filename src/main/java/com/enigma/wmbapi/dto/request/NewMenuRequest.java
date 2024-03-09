@@ -15,5 +15,5 @@ public class NewMenuRequest {
     @NotNull
     String name;
     @Min(value = 0)
-    Float price;
+    Long price;
 }
