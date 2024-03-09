@@ -3,6 +3,7 @@ package com.enigma.wmbapi.controller;
 import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.dto.request.NewCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
+import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
@@ -80,9 +81,15 @@ public class CustomerController {
     }
 
     @PutMapping
-    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer){
-        Customer newCustomer = customerService.update(customer);
-        return ResponseEntity.ok(newCustomer);
+    public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody UpdateCustomerRequest request){
+        CustomerResponse newCustomer = customerService.update(request);
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("updated")
+                .data(newCustomer)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(path = "/{id}")
