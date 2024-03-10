@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 public interface CustomerService {
 
     Customer create(NewCustomerRequest request);
+    Customer create(Customer requesst);
     Customer getById(String id);
 
     Page<CustomerResponse> getAll(SearchCustomerRequest request);

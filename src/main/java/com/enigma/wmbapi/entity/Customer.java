@@ -17,12 +17,14 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @NotNull
-    @Column(name = "name", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @NotNull
-    @Column(name = "phone_number", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "phone_number", length = Integer.MAX_VALUE)
     private String phoneNumber;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true)
+    private UserAccount userAccount;
 
 }

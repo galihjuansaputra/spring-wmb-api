@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,6 +27,12 @@ public class CustomerServiceImpl implements CustomerService {
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .build();
+        return customerRepository.saveAndFlush(customer);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Customer create(Customer customer) {
         return customerRepository.saveAndFlush(customer);
     }
 
