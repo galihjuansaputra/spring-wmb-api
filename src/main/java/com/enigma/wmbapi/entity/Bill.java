@@ -41,6 +41,6 @@ public class Bill {
 
     @OneToMany(mappedBy = "bill")
     @JsonManagedReference
-    private List<BillDetail> transactionDetails;
+    private List<BillDetail> billDetails;
 
 }

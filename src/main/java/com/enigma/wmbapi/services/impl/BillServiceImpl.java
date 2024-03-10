@@ -53,7 +53,7 @@ public class BillServiceImpl implements BillService {
                     .build();
         }).toList();
         billDetailService.createBulk(billDetails);
-        bill.setTransactionDetails(billDetails);
+        bill.setBillDetails(billDetails);
 
         List<BillDetailResponse> billDetailResponses = billDetails.stream().map(detail ->
                 BillDetailResponse.builder()
