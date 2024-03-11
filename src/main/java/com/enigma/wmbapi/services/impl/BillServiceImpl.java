@@ -5,7 +5,6 @@ import com.enigma.wmbapi.dto.request.SearchBillRequest;
 import com.enigma.wmbapi.dto.response.BillDetailResponse;
 import com.enigma.wmbapi.dto.response.BillResponse;
 import com.enigma.wmbapi.entity.*;
-import com.enigma.wmbapi.repository.BillDetailRepository;
 import com.enigma.wmbapi.repository.BillRepository;
 import com.enigma.wmbapi.services.*;
 import lombok.RequiredArgsConstructor;
