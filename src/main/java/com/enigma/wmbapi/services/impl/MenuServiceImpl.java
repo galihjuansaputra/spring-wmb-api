@@ -3,6 +3,7 @@ package com.enigma.wmbapi.services.impl;
 import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
+import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
 import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.dto.response.MenuResponse;
 import com.enigma.wmbapi.entity.Customer;
@@ -70,6 +71,16 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Menu update(Menu menu) {
         return menuRepository.saveAndFlush(menu);
+    }
+
+    @Override
+    public MenuResponse update(UpdateMenuRequest request) {
+        Menu currentMenu = getById(request.getId());
+        currentMenu.setName(request.getName());
+        currentMenu.setPrice(request.getPrice());
+        menuRepository.saveAndFlush(currentMenu);
+
+        return convertMenuToMenuResponse(currentMenu);
     }
 
     @Override

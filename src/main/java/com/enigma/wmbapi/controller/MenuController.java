@@ -2,10 +2,9 @@ package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.constant.ResponseMessage;
-import com.enigma.wmbapi.dto.request.NewCustomerRequest;
-import com.enigma.wmbapi.dto.request.NewMenuRequest;
-import com.enigma.wmbapi.dto.request.SearchMenuRequest;
+import com.enigma.wmbapi.dto.request.*;
 import com.enigma.wmbapi.dto.response.CommonResponse;
+import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.dto.response.MenuResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Customer;
@@ -68,6 +67,18 @@ public class MenuController {
                 .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(menus.getContent())
                 .paging(pagingResponse)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<CommonResponse<MenuResponse>> updateCustomer(@RequestBody UpdateMenuRequest request){
+        MenuResponse newMenu = menuService.update(request);
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("updated")
+                .data(newMenu)
                 .build();
 
         return ResponseEntity.ok(response);
