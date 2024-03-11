@@ -1,11 +1,13 @@
 package com.enigma.wmbapi.dto.request;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class BillRequest {
     private String customerId;

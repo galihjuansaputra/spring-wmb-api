@@ -10,6 +10,8 @@ import com.enigma.wmbapi.repository.BillRepository;
 import com.enigma.wmbapi.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -75,6 +77,24 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Page<BillResponse> getAll(SearchBillRequest request) {
-        return null;
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        Page<Bill> transactions = billRepository.findAll(pageable);
+
+        return transactions.map(bill -> {
+            List<BillDetailResponse> billDetailResponses = bill.getBillDetails().stream().map(detail -> BillDetailResponse.builder()
+                    .id(detail.getId())
+                    .menuId(detail.getMenu().getId())
+                    .price(detail.getPrice())
+                    .quantity(detail.getQty())
+                    .build()).toList();
+
+            return BillResponse.builder()
+                    .id(bill.getId())
+                    .customer(bill.getCustomer().getId())
+                    .transDate(bill.getTransDate())
+                    .tableId(bill.getTable().getId())
+                    .billDetails(billDetailResponses)
+                    .build();
+        });
     }
 }

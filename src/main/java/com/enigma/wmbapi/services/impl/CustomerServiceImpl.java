@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.services.impl;
 
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.NewCustomerRequest;
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
@@ -38,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getById(String id) {
-        return customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "customer not found"));
+        return customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Override
@@ -51,7 +52,8 @@ public class CustomerServiceImpl implements CustomerService {
         if (request.getName() != null || request.getPhoneNumber() != null) {
             Page<CustomerResponse> result = customerRepository.findAllByNameContainingIgnoreCaseOrPhoneNumberContaining(request.getName(), request.getPhoneNumber(), pageable);
 
-            if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
+            if (result.getTotalPages() == 0) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
+            if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.ERROR_PAGE_LIMIT);
 
             return result;
         }
@@ -64,8 +66,8 @@ public class CustomerServiceImpl implements CustomerService {
                 .toList();
 
         Page<CustomerResponse> result = new PageImpl<>(customerResponses, pageable, customers.getTotalElements());
-
-        if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
+        if (result.getTotalPages() == 0) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_EMPTY_DATA);
+        if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.ERROR_PAGE_LIMIT);
 
         return result;
     }

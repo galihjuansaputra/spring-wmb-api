@@ -45,7 +45,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Menu getById(String id) {
-        return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"id not found"));
+        return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class MenuServiceImpl implements MenuService {
             Page<MenuResponse> result = menuRepository.findAllByNameContainingIgnoreCase(request.getName(), pageable);
 
             if (result.getTotalPages() == 0) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
-            if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
+            if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.ERROR_PAGE_LIMIT);
 
             return result;
         }
@@ -72,8 +72,8 @@ public class MenuServiceImpl implements MenuService {
                 .toList();
 
         Page<MenuResponse> result = new PageImpl<>(menuResponses, pageable, menu.getTotalElements());
-
-        if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page exceeding limit");
+        if (result.getTotalPages() == 0) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_EMPTY_DATA);
+        if (request.getPage() > result.getTotalPages()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.ERROR_PAGE_LIMIT);
 
         return result;
     }
