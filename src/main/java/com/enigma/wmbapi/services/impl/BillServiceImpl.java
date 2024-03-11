@@ -77,7 +77,8 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Page<BillResponse> getAll(SearchBillRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        if (request.getPage() <= 0) request.setPage(1);
+        Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize());
         Page<Bill> transactions = billRepository.findAll(pageable);
 
         return transactions.map(bill -> {
@@ -92,6 +93,7 @@ public class BillServiceImpl implements BillService {
                     .id(bill.getId())
                     .customer(bill.getCustomer().getId())
                     .transDate(bill.getTransDate())
+                    .transType(bill.getTransType().getId())
                     .tableId(bill.getTable().getId())
                     .billDetails(billDetailResponses)
                     .build();
