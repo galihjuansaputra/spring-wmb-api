@@ -26,7 +26,7 @@ public class MenuController {
     private final MenuService menuService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<Menu>> createNewCustomer(@RequestBody NewMenuRequest request) {
+    public ResponseEntity<CommonResponse<Menu>> createNewMenu(@RequestBody NewMenuRequest request) {
         Menu menu = menuService.create(request);
         CommonResponse<Menu> response = CommonResponse.<Menu>builder()
                 .statusCode(HttpStatus.CREATED.value())
