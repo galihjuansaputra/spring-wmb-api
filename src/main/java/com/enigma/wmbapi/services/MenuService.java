@@ -14,6 +14,7 @@ public interface MenuService {
 
     Page<MenuResponse> getAll(SearchMenuRequest request);
 
+
     Menu update(Menu menu);
 
     MenuResponse update(UpdateMenuRequest request);

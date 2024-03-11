@@ -86,6 +86,14 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MenuResponse update(UpdateMenuRequest request) {
         Menu currentMenu = getById(request.getId());
+        String currentImageId = currentMenu.getImage().getId();
+
+        if(request.getImage() != null){
+            Image image = imageService.create(request.getImage());
+            currentMenu.setImage(image);
+            imageService.deleteById(currentImageId);
+        }
+
         currentMenu.setName(request.getName());
         currentMenu.setPrice(request.getPrice());
         menuRepository.saveAndFlush(currentMenu);

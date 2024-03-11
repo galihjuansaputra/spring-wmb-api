@@ -92,16 +92,29 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping
-    public ResponseEntity<CommonResponse<MenuResponse>> updateCustomer(@RequestBody UpdateMenuRequest request){
-        MenuResponse newMenu = menuService.update(request);
-        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("updated")
-                .data(newMenu)
-                .build();
+    @PutMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<?>> updateMenu(
+            @RequestPart(name = "menu") String jsonMenu,
+            @RequestPart(name = "image") MultipartFile image
+    ){
+        CommonResponse.CommonResponseBuilder<MenuResponse> responseBuilder = CommonResponse.builder();
+        try {
+            UpdateMenuRequest request = objectMapper.readValue(jsonMenu, new TypeReference<>() {});
+            request.setImage(image);
+            MenuResponse newMenu = menuService.update(request);
+            responseBuilder.statusCode(HttpStatus.OK.value());
+            responseBuilder.message(ResponseMessage.SUCCESS_UPDATE_DATA);
+            responseBuilder.data(newMenu);
+            return ResponseEntity.status(HttpStatus.OK).body(responseBuilder.build());
+        } catch (Exception e) {
+            responseBuilder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseBuilder.message(ResponseMessage.ERROR_INTERNAL_SERVER);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBuilder.build());
+        }
 
-        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(path = "/{id}")
