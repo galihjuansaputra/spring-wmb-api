@@ -3,13 +3,15 @@ package com.enigma.wmbapi.dto.request;
 import com.enigma.wmbapi.entity.Menu;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * DTO for {@link Menu}
  */
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class NewMenuRequest {
     @NotNull

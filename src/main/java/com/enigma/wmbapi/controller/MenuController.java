@@ -2,19 +2,20 @@ package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.constant.ResponseMessage;
+import com.enigma.wmbapi.dto.request.NewCustomerRequest;
+import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.MenuResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
+import com.enigma.wmbapi.entity.Customer;
+import com.enigma.wmbapi.entity.Menu;
 import com.enigma.wmbapi.services.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +24,17 @@ import java.util.List;
 @RequestMapping(path = APIUrl.MENU_API)
 public class MenuController {
     private final MenuService menuService;
+
+    @PostMapping
+    public ResponseEntity<CommonResponse<Menu>> createNewCustomer(@RequestBody NewMenuRequest request) {
+        Menu menu = menuService.create(request);
+        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
+                .data(menu)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @GetMapping
     public ResponseEntity<CommonResponse<List<MenuResponse>>> getAllMenu(
