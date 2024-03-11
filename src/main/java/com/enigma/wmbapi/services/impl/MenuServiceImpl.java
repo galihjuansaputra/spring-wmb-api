@@ -1,16 +1,21 @@
 package com.enigma.wmbapi.services.impl;
 
+import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
 import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
 import com.enigma.wmbapi.dto.response.CustomerResponse;
+import com.enigma.wmbapi.dto.response.ImageResponse;
 import com.enigma.wmbapi.dto.response.MenuResponse;
 import com.enigma.wmbapi.entity.Customer;
+import com.enigma.wmbapi.entity.Image;
 import com.enigma.wmbapi.entity.Menu;
 import com.enigma.wmbapi.repository.CustomerRepository;
 import com.enigma.wmbapi.repository.MenuRepository;
+import com.enigma.wmbapi.services.ImageService;
 import com.enigma.wmbapi.services.MenuService;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
@@ -23,14 +28,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
+    private final ImageService imageService;
 
     @Override
-    public Menu create(NewMenuRequest request) {
+    public MenuResponse create(NewMenuRequest request) {
+        if (request.getImage().isEmpty()) throw new ConstraintViolationException("image is required", null);
+        Image image = imageService.create(request.getImage());
         Menu menu = Menu.builder()
                 .name(request.getName())
                 .price(request.getPrice())
+                .image(image)
                 .build();
-        return menuRepository.saveAndFlush(menu);
+        menuRepository.saveAndFlush(menu);
+        return convertMenuToMenuResponse(menu);
     }
 
     @Override
@@ -94,6 +104,10 @@ public class MenuServiceImpl implements MenuService {
                 .id(menu.getId())
                 .name(menu.getName())
                 .price(menu.getPrice())
+                .image(ImageResponse.builder()
+                        .url(APIUrl.PRODUCT_IMAGE_DOWNLOAD_API + menu.getImage().getId())
+                        .name(menu.getImage().getName())
+                        .build())
                 .build();
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 
 public interface MenuService {
 
-    Menu create(NewMenuRequest request);
+    MenuResponse create(NewMenuRequest request);
     Menu getById(String id);
 
     Page<MenuResponse> getAll(SearchMenuRequest request);
