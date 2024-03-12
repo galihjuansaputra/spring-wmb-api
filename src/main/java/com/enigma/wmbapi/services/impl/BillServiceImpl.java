@@ -7,9 +7,11 @@ import com.enigma.wmbapi.dto.request.UpdateBillStatusRequest;
 import com.enigma.wmbapi.dto.response.BillDetailResponse;
 import com.enigma.wmbapi.dto.response.BillResponse;
 import com.enigma.wmbapi.dto.response.PaymentResponse;
+import com.enigma.wmbapi.dto.response.ReportResponse;
 import com.enigma.wmbapi.entity.*;
 import com.enigma.wmbapi.repository.BillRepository;
 import com.enigma.wmbapi.services.*;
+import com.enigma.wmbapi.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +35,6 @@ public class BillServiceImpl implements BillService {
     private final MenuService menuService;
     private final TransTypeService transTypeService;
     private final PaymentService paymentService;
-
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -121,11 +123,42 @@ public class BillServiceImpl implements BillService {
         });
     }
 
+    @Override
+    public List<ReportResponse> getAllReport() {
+        List<Bill> transactions = billRepository.findAll();
+
+        return transactions.stream().map(bill -> {
+            List<BillDetailResponse> billDetailResponses = bill.getBillDetails().stream().map(detail -> BillDetailResponse.builder()
+                    .id(detail.getId())
+                    .menuId(detail.getMenu().getId())
+                    .price(detail.getPrice())
+                    .quantity(detail.getQty())
+                    .build()).toList();
+
+            return ReportResponse.builder()
+                    .id(bill.getId())
+                    .customer(bill.getCustomer().getId())
+                    .transDate(bill.getTransDate())
+                    .transType(bill.getTransType().getId())
+                    .tableId(bill.getTable().getId())
+                    .billDetails(billDetailResponses)
+                    .paymentId(bill.getPayment().getId())
+                    .paymentStatus(bill.getPayment().getBillStatus())
+                    .build();
+        }).toList();
+    }
+
+    @Override
+    public ByteArrayInputStream getReportDownloaded() {
+        List<ReportResponse> bills = getAllReport();
+        return ExcelUtil.dataToExcel(bills);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateStatus(UpdateBillStatusRequest request){
+    public void updateStatus(UpdateBillStatusRequest request) {
         Bill bill = billRepository.findById(request.getOrderId()).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND)
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND)
         );
         Payment payment = bill.getPayment();
         payment.setBillStatus(request.getBillStatus());

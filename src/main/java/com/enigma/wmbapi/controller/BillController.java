@@ -8,14 +8,19 @@ import com.enigma.wmbapi.dto.request.UpdateBillStatusRequest;
 import com.enigma.wmbapi.dto.response.BillResponse;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
+import com.enigma.wmbapi.dto.response.ReportResponse;
 import com.enigma.wmbapi.services.BillService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -78,4 +83,23 @@ public class BillController {
                 .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .build());
     }
+
+    @GetMapping(path = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ReportResponse> billReport() {
+        return billService.getAllReport();
+    }
+
+    @GetMapping(path = "/download")
+    public ResponseEntity<InputStreamResource> download() throws IOException {
+        String fileName = "bill_reports.xlsx";
+
+        ByteArrayInputStream inputStream = billService.getReportDownloaded();
+        InputStreamResource response = new InputStreamResource(inputStream);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(response);
+    }
+
+
 }
