@@ -1,9 +1,12 @@
 package com.enigma.wmbapi.services.impl;
 
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.BillRequest;
 import com.enigma.wmbapi.dto.request.SearchBillRequest;
+import com.enigma.wmbapi.dto.request.UpdateBillStatusRequest;
 import com.enigma.wmbapi.dto.response.BillDetailResponse;
 import com.enigma.wmbapi.dto.response.BillResponse;
+import com.enigma.wmbapi.dto.response.PaymentResponse;
 import com.enigma.wmbapi.entity.*;
 import com.enigma.wmbapi.repository.BillRepository;
 import com.enigma.wmbapi.services.*;
@@ -11,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
@@ -25,9 +31,11 @@ public class BillServiceImpl implements BillService {
     private final MTableService tableService;
     private final MenuService menuService;
     private final TransTypeService transTypeService;
+    private final PaymentService paymentService;
 
 
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public BillResponse create(BillRequest request) {
         Customer customer = customerService.getById(request.getCustomerId());
@@ -53,8 +61,6 @@ public class BillServiceImpl implements BillService {
                     .price(menu.getPrice())
                     .build();
         }).toList();
-        billDetailService.createBulk(billDetails);
-        bill.setBillDetails(billDetails);
 
         List<BillDetailResponse> billDetailResponses = billDetails.stream().map(detail ->
                 BillDetailResponse.builder()
@@ -62,7 +68,22 @@ public class BillServiceImpl implements BillService {
                         .menuId(detail.getMenu().getId())
                         .price(detail.getPrice())
                         .quantity(detail.getQty())
-                        .build()).toList();
+                        .build()
+        ).toList();
+
+        billDetailService.createBulk(billDetails);
+
+        bill.setBillDetails(billDetails);
+        Payment payment = paymentService.createPayment(bill);
+        bill.setPayment(payment);
+
+
+        PaymentResponse paymentResponse = PaymentResponse.builder()
+                .id(payment.getId())
+                .token(payment.getToken())
+                .redirectUrl(payment.getRedirectUrl())
+                .transactionStatus(payment.getBillStatus())
+                .build();
 
         return BillResponse.builder()
                 .id(bill.getId())
@@ -71,6 +92,7 @@ public class BillServiceImpl implements BillService {
                 .transDate(bill.getTransDate())
                 .transType(bill.getTransType().getId())
                 .billDetails(billDetailResponses)
+                .paymentResponse(paymentResponse)
                 .build();
     }
 
@@ -97,5 +119,15 @@ public class BillServiceImpl implements BillService {
                     .billDetails(billDetailResponses)
                     .build();
         });
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatus(UpdateBillStatusRequest request){
+        Bill bill = billRepository.findById(request.getOrderId()).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND)
+        );
+        Payment payment = bill.getPayment();
+        payment.setBillStatus(request.getBillStatus());
     }
 }

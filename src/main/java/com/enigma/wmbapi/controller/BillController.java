@@ -4,6 +4,7 @@ import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.BillRequest;
 import com.enigma.wmbapi.dto.request.SearchBillRequest;
+import com.enigma.wmbapi.dto.request.UpdateBillStatusRequest;
 import com.enigma.wmbapi.dto.response.BillResponse;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -64,5 +66,16 @@ public class BillController {
         return ResponseEntity.ok(response);
     }
 
-
+    @PostMapping("/status")
+    public ResponseEntity<CommonResponse<?>> updateStatus(@RequestBody Map<String, Object> request) {
+        UpdateBillStatusRequest updateTransactionStatusRequest = UpdateBillStatusRequest.builder()
+                .orderId(request.get("order_id").toString())
+                .billStatus(request.get("transaction_status").toString())
+                .build();
+        billService.updateStatus(updateTransactionStatusRequest);
+        return ResponseEntity.ok(CommonResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
+                .build());
+    }
 }
