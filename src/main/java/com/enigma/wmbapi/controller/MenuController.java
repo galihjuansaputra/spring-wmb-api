@@ -10,6 +10,7 @@ import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Customer;
 import com.enigma.wmbapi.entity.Menu;
 import com.enigma.wmbapi.services.MenuService;
+import com.enigma.wmbapi.services.impl.MenuServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequestMapping(path = APIUrl.MENU_API)
 public class MenuController {
     private final MenuService menuService;
+    private final MenuServiceImpl menuServiceImpl;
     private final ObjectMapper objectMapper;
 
     @PostMapping(
@@ -90,6 +92,12 @@ public class MenuController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<MenuResponse> getMenuById(@PathVariable String id){
+        Menu menu = menuService.getById(id);
+        return ResponseEntity.ok(menuServiceImpl.convertMenuToMenuResponse(menu));
     }
 
     @PutMapping(

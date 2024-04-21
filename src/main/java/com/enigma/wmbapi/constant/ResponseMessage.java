@@ -14,4 +14,5 @@ public class ResponseMessage {
     public static final String ERROR_CREATING_JWT = "error while creating jwt token";
     public static final String SUCCESS_LOGIN = "login successfully";
     public static final String ERROR_INVALID_CONTENT_TYPE = "invalid image type";
+    public static final String ERROR_INVALID_JWT = "invalid jwt token";
 }

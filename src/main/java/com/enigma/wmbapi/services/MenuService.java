@@ -18,5 +18,6 @@ public interface MenuService {
     Menu update(Menu menu);
 
     MenuResponse update(UpdateMenuRequest request);
+
     void delete(String id);
 }

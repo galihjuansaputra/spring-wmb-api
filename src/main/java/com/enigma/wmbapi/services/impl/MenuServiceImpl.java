@@ -107,7 +107,7 @@ public class MenuServiceImpl implements MenuService {
         menuRepository.delete(currentMenu);
     }
 
-    private MenuResponse convertMenuToMenuResponse(Menu menu) {
+    public MenuResponse convertMenuToMenuResponse(Menu menu) {
         return  MenuResponse.builder()
                 .id(menu.getId())
                 .name(menu.getName())
